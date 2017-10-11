@@ -10,16 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171009025039) do
+ActiveRecord::Schema.define(version: 20171011131611) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "food_types", force: :cascade do |t|
-    t.string "name"
-    t.float "thickness"
+  create_table "feeders", force: :cascade do |t|
+    t.string "nickname"
+    t.bigint "tank_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "nivel", default: "low", null: false
+    t.boolean "need_reload"
+    t.index ["tank_id"], name: "index_feeders_on_tank_id"
   end
 
   create_table "foods", force: :cascade do |t|
@@ -42,4 +45,33 @@ ActiveRecord::Schema.define(version: 20171009025039) do
     t.index ["food_id"], name: "index_lots_on_food_id"
   end
 
+  create_table "sensor_records", force: :cascade do |t|
+    t.float "value"
+    t.bigint "sensor_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["sensor_id"], name: "index_sensor_records_on_sensor_id"
+  end
+
+  create_table "sensors", force: :cascade do |t|
+    t.string "name"
+    t.string "description"
+    t.string "scale"
+    t.boolean "is_working"
+    t.date "fail_registration"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "feeder_id"
+    t.index ["feeder_id"], name: "index_sensors_on_feeder_id"
+  end
+
+  create_table "tanks", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_foreign_key "feeders", "tanks"
+  add_foreign_key "sensor_records", "sensors"
+  add_foreign_key "sensors", "feeders"
 end
