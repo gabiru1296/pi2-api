@@ -1,5 +1,5 @@
 class SensorsController < ApplicationController
-  before_action :set_sensor, only: [:show, :update, :destroy, :generate_random_data]
+  before_action :set_sensor, only: [:show, :update, :destroy, :generate_random_data, :formated_data]
 
   # GET /sensors
   def index
@@ -56,6 +56,23 @@ class SensorsController < ApplicationController
 
     render json: {
       'success': true
+    }
+  end
+
+  def formated_data
+    x = Array.new
+    y = Array.new
+    records = @sensor.sensor_record
+
+    records.each do |r|
+      y.push(r.value.round(2))
+      x.push(r.created_at)
+    end
+
+    render json: {
+      'x': x,
+      'y': y,
+      'label': "#{@sensor.name} (#{@sensor.scale})"
     }
   end
 

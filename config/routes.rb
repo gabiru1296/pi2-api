@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   resources :sensors do
     collection do
       get 'generate_random_data/:id/:number_of_items', :to => "sensors#generate_random_data"
+      get 'formated_records_data/:id', :to => "sensors#formated_data"
     end
   end
   resources :lots
