@@ -1,0 +1,9 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  error: 1
+  sensor: one
+
+two:
+  error: 1
+  sensor: two

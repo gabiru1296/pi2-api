@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  total: 1
+  isDone: false
+  current_total: 1
+  fish_type: one
+  tank: one
+
+two:
+  total: 1
+  isDone: false
+  current_total: 1
+  fish_type: two
+  tank: two

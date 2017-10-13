@@ -5,3 +5,18 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+ClusterCounterType.create([
+    {
+      code: 1,
+      description: 'Adição vindo de outro tanque'
+    },
+    {
+      code: 2,
+      description: 'Peixes mortos'
+    },
+    {
+      code: 3,
+      description: 'Peixes enviados para outro tanque'
+    }
+])

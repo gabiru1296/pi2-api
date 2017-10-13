@@ -1,5 +1,5 @@
 class TanksController < ApplicationController
-  before_action :set_tank, only: [:show, :update, :destroy]
+  before_action :set_tank, only: [:show, :update, :destroy, :register_transation]
 
   # GET /tanks
   def index
@@ -36,6 +36,24 @@ class TanksController < ApplicationController
   # DELETE /tanks/1
   def destroy
     @tank.destroy
+  end
+
+  def register_transation
+    code = params[:code]
+    quantity = params[:quantity]
+
+    cluster = @tank.current_cluster
+    counterType = ClusterCounterType.where(code: code).take
+
+    if ClusterCounter.create(quantity: quantity, cluster_counter_type: counterType, cluster: cluster)
+      render json: {
+        success: true
+      }
+    else
+      render json: {
+        success: false
+      }
+    end
   end
 
   private

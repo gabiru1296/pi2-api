@@ -10,7 +10,7 @@ class SensorsController < ApplicationController
 
   # GET /sensors/1
   def show
-    render json: @sensor, include: ['sensor_record']
+    render json: @sensor, include: ['sensor_errors']
   end
 
   # POST /sensors
@@ -38,6 +38,7 @@ class SensorsController < ApplicationController
     @sensor.destroy
   end
 
+  # Create random records sensor for every 6 hours
   def generate_random_data
     number_of_items = params['number_of_items']
     seedData = Array.new(number_of_items.to_i) { rand*100 }
@@ -47,7 +48,7 @@ class SensorsController < ApplicationController
     seedData.each_with_index do |d, index|
       seedModels.push({
         value: d,
-        created_at: initialTime + 60*15*index,
+        created_at: initialTime - 6*60*60*index,
         sensor: @sensor
       })
     end
@@ -60,9 +61,23 @@ class SensorsController < ApplicationController
   end
 
   def formated_data
+    filterType = params["filterType"]
+    records = nil
+
+    if filterType == nil
+      records = @sensor.sensor_record
+    elsif filterType == 'all'
+      records = @sensor.sensor_record
+    elsif filterType == 'lastDay'
+      records = SensorRecord.created(1, @sensor)
+    elsif filterType == 'lastWeek'
+      records = SensorRecord.created(7, @sensor)
+    elsif filterType == 'lastMonth'
+      records = SensorRecord.created(30, @sensor)
+    end
+
     x = Array.new
     y = Array.new
-    records = @sensor.sensor_record
 
     records.each do |r|
       y.push(r.value.round(2))

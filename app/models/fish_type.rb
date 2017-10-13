@@ -1,0 +1,2 @@
+class FishType < ApplicationRecord
+end

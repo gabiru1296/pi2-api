@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  quantity: 1
+  cluster: one
+  cluster_counter_type: one
+
+two:
+  quantity: 1
+  cluster: two
+  cluster_counter_type: two

@@ -10,10 +10,65 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171011131611) do
+ActiveRecord::Schema.define(version: 20171013191503) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "cluster_counter_types", force: :cascade do |t|
+    t.integer "code"
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "cluster_counters", force: :cascade do |t|
+    t.integer "quantity"
+    t.bigint "cluster_id"
+    t.bigint "cluster_counter_type_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cluster_counter_type_id"], name: "index_cluster_counters_on_cluster_counter_type_id"
+    t.index ["cluster_id"], name: "index_cluster_counters_on_cluster_id"
+  end
+
+  create_table "cluster_metrics", force: :cascade do |t|
+    t.float "weight"
+    t.float "length"
+    t.float "tca"
+    t.bigint "cluster_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cluster_id"], name: "index_cluster_metrics_on_cluster_id"
+  end
+
+  create_table "clusters", force: :cascade do |t|
+    t.integer "total"
+    t.boolean "is_done"
+    t.integer "current_total"
+    t.bigint "fish_type_id"
+    t.bigint "tank_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.date "end_date"
+    t.float "initial_weight"
+    t.float "current_tca"
+    t.index ["fish_type_id"], name: "index_clusters_on_fish_type_id"
+    t.index ["tank_id"], name: "index_clusters_on_tank_id"
+  end
+
+  create_table "consumptions", force: :cascade do |t|
+    t.float "quantity"
+    t.bigint "lot_id"
+    t.bigint "feeder_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.float "dose_value"
+    t.bigint "cluster_id"
+    t.index ["cluster_id"], name: "index_consumptions_on_cluster_id"
+    t.index ["feeder_id"], name: "index_consumptions_on_feeder_id"
+    t.index ["lot_id"], name: "index_consumptions_on_lot_id"
+  end
 
   create_table "feeders", force: :cascade do |t|
     t.string "nickname"
@@ -22,7 +77,15 @@ ActiveRecord::Schema.define(version: 20171011131611) do
     t.datetime "updated_at", null: false
     t.string "nivel", default: "low", null: false
     t.boolean "need_reload"
+    t.boolean "need_setup", default: true, null: false
+    t.integer "network_code"
     t.index ["tank_id"], name: "index_feeders_on_tank_id"
+  end
+
+  create_table "fish_types", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "foods", force: :cascade do |t|
@@ -43,6 +106,14 @@ ActiveRecord::Schema.define(version: 20171011131611) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["food_id"], name: "index_lots_on_food_id"
+  end
+
+  create_table "sensor_errors", force: :cascade do |t|
+    t.integer "error"
+    t.bigint "sensor_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["sensor_id"], name: "index_sensor_errors_on_sensor_id"
   end
 
   create_table "sensor_records", force: :cascade do |t|
@@ -71,7 +142,16 @@ ActiveRecord::Schema.define(version: 20171011131611) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "cluster_counters", "cluster_counter_types"
+  add_foreign_key "cluster_counters", "clusters"
+  add_foreign_key "cluster_metrics", "clusters"
+  add_foreign_key "clusters", "fish_types"
+  add_foreign_key "clusters", "tanks"
+  add_foreign_key "consumptions", "clusters"
+  add_foreign_key "consumptions", "feeders"
+  add_foreign_key "consumptions", "lots"
   add_foreign_key "feeders", "tanks"
+  add_foreign_key "sensor_errors", "sensors"
   add_foreign_key "sensor_records", "sensors"
   add_foreign_key "sensors", "feeders"
 end
