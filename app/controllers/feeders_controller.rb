@@ -44,6 +44,7 @@ class FeedersController < ApplicationController
     data = params['data']
 
     if data != nil && data.length == 0
+      render :nothing => true, :status => 412
       return
     end
 
@@ -65,7 +66,8 @@ class FeedersController < ApplicationController
     @result = HTTParty.post(api_url,
           :body => feeder_working_setups,
           :headers => { 'Content-Type' => 'application/json' } )
-    puts @result
+
+    render :nothing => true, :status => @result.code
   end
 
   private
