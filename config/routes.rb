@@ -6,7 +6,12 @@ Rails.application.routes.draw do
   resources :fish_types
   resources :consumptions
   resources :sensor_errors
-  resources :feeders
+  resources :feeders do
+    collection do
+      post 'register_data', :to => 'feeders#register_data'
+      get 'send_settings', :to => 'feeders#dispatch_data_to_feeder'
+    end
+  end
   resources :tanks do
     collection do
       post 'register_transation/:id/:code/:quantity', :to => 'tanks#register_transation'

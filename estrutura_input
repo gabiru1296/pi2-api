@@ -1,0 +1,15 @@
+ID  HORA MINUTO NIVEL(0/100) BATERIA(0/100) CODE-ERROR  PH TEMPERATURA CODUTIVIDADE
+
+http://localhost:3000/feeders/register_data
+
+{
+  network_id:
+  hora:
+  minute:
+  food_level:
+  battery_level:
+  error_code:
+  ph:
+  temperature:
+  conductivity:
+}
