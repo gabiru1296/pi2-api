@@ -20,3 +20,12 @@ ClusterCounterType.create([
       description: 'Peixes enviados para outro tanque'
     }
 ])
+
+Fish.create([
+  {
+    name: 'Tilapia'
+  },
+  {
+    name: 'Pintado'
+  }
+])
