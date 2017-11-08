@@ -93,6 +93,8 @@ class FeedersController < ApplicationController
       register_value_for_sensor(:ph, register['ph'], feeder)
       register_value_for_sensor(:conductivity, register['conductivity'], feeder)
       register_value_for_sensor(:temperature, register['temperature'], feeder)
+      register_value_for_sensor(:turbidity, register['turbidity'], feeder)
+      register_value_for_sensor(:oxigenium, register['oxigenium'], feeder)
     end
 
     def register_value_for_sensor(type, value, feeder)
@@ -121,6 +123,10 @@ class FeedersController < ApplicationController
         return Sensor.new name: "Sensor de Condutividade", description: "Descrição default de condutividade", scale: "cm", sensor_type: :conductivity, feeder: feeder
       when :temperature
         return Sensor.new name: "Sensor de Temperatura", description: "Descrição default de Temperatura", scale: "cm", sensor_type: :temperature, feeder: feeder
+      when :oxigenium
+        return Sensor.new name: "Sensor de Oxigênio", description: "Descrição default de Oxigêncio", scale: "cm"
+      when :turbidity
+        return Sensor.new name: "Sensor de Turbidez", description: "Descrição default de Tubidez", scale: "cm"
       else
         ####### sensor default #######
         return Sensor.new name: "Sensor desconhecido", description: "Descrição default de Temperatura", scale: "cm", sensor_type: :untyped, feeder: feeder
