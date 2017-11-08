@@ -42,6 +42,7 @@ class FeedersController < ApplicationController
 
   def register_data
     data = params['data']
+    
 
     if data != nil && data.length == 0
       render :nothing => true, :status => 412
@@ -62,7 +63,7 @@ class FeedersController < ApplicationController
   end
 
   def dispatch_data_to_feeder
-    api_url = 'http://192.168.15.202:8000'
+    api_url = 'http://169.254.229.243:8000'
     @result = HTTParty.post(api_url,
           :body => feeder_working_setups,
           :headers => { 'Content-Type' => 'application/json' } )
@@ -124,9 +125,9 @@ class FeedersController < ApplicationController
       when :temperature
         return Sensor.new name: "Sensor de Temperatura", description: "Descrição default de Temperatura", scale: "cm", sensor_type: :temperature, feeder: feeder
       when :oxigenium
-        return Sensor.new name: "Sensor de Oxigênio", description: "Descrição default de Oxigêncio", scale: "cm"
+        return Sensor.new name: "Sensor de Oxigênio", description: "Descrição default de Oxigêncio", scale: "cm", sensor_type: :oxigenium, feeder: feeder
       when :turbidity
-        return Sensor.new name: "Sensor de Turbidez", description: "Descrição default de Tubidez", scale: "cm"
+        return Sensor.new name: "Sensor de Turbidez", description: "Descrição default de Tubidez", scale: "cm", sensor_type: :turbidity, feeder: feeder
       else
         ####### sensor default #######
         return Sensor.new name: "Sensor desconhecido", description: "Descrição default de Temperatura", scale: "cm", sensor_type: :untyped, feeder: feeder
