@@ -21,7 +21,7 @@ ClusterCounterType.create([
     }
 ])
 
-Fish.create([
+FishType.create([
   {
     name: 'Tilapia'
   },
