@@ -65,9 +65,9 @@ class SensorsController < ApplicationController
     records = nil
 
     if filterType == nil
-      records = @sensor.sensor_record
+      records = @sensor.sensor_record.order(:register_date)
     elsif filterType == 'all'
-      records = @sensor.sensor_record
+      records = @sensor.sensor_record.order(:register_date)
     elsif filterType == 'lastDay'
       records = SensorRecord.created(1, @sensor)
     elsif filterType == 'lastWeek'
@@ -81,7 +81,7 @@ class SensorsController < ApplicationController
 
     records.each do |r|
       y.push(r.value.round(2))
-      x.push(r.created_at)
+      x.push(r.register_date)
     end
 
     render json: {

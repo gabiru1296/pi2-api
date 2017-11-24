@@ -58,7 +58,7 @@ class FeedersController < ApplicationController
 
       register_sensor_values(register, feeder)
     end
-
+    byebug
     render :nothing => true, :status => 200
   end
 
@@ -122,16 +122,16 @@ class FeedersController < ApplicationController
     end
 
     def register_sensor_values(register, feeder)
-      now = DateTime.new
-      normilizedData =  now.change({hour: register["hora"].to_i, min: register["minute"].to_i, sec: 0})
-      puts "-------------------------"
-      puts register
-      puts "-------------------------"
-      register_value_for_sensor(:ph, register['ph'], feeder, normilizedData)
-      register_value_for_sensor(:conductivity, register['conductivity'], feeder, normilizedData)
-      register_value_for_sensor(:temperature, register['temperature'], feeder, normilizedData)
-      register_value_for_sensor(:turbidity, register['turbidity'], feeder, normilizedData)
-      register_value_for_sensor(:oxigenium, register['oxigenium'], feeder, normilizedData)
+      now = DateTime.now
+      hours = register["hora"].to_i
+      minute = register["minute"].to_i
+      normilizedDateTime =  DateTime.new(now.year, now.month, now.day, hours, minute, 0, now.zone)
+
+      register_value_for_sensor(:ph, register['ph'], feeder, normilizedDateTime)
+      register_value_for_sensor(:conductivity, register['conductivity'], feeder, normilizedDateTime)
+      register_value_for_sensor(:temperature, register['temperature'], feeder, normilizedDateTime)
+      register_value_for_sensor(:turbidity, register['turbidity'], feeder, normilizedDateTime)
+      register_value_for_sensor(:oxigenium, register['oxigenium'], feeder, normilizedDateTime)
     end
 
     def register_value_for_sensor(type, value, feeder, datetime)
@@ -142,12 +142,15 @@ class FeedersController < ApplicationController
       sensor = feeder.sensors.where(sensor_type: type).take
 
       if sensor != nil
-        SensorRecord.create(value: value.to_f, sensor: sensor, created_at: datetime)
+        puts 'salvado para'
+        puts datetime
+        SensorRecord.create(value: value.to_f, sensor: sensor, register_date: datetime)
       else
         new_sensor = sensor_for_type(type, feeder)
-
+        puts 'salvado para'
+        puts datetime
         if new_sensor.save
-          SensorRecord.create(value: value.to_f, sensor: new_sensor, created_at: datetime)
+          SensorRecord.create(value: value.to_f, sensor: new_sensor, register_date: datetime)
         end
       end
     end
