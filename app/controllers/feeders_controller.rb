@@ -42,7 +42,7 @@ class FeedersController < ApplicationController
 
   def register_data
     data = params['data']
-    
+
 
     if data != nil && data.length == 0
       render :nothing => true, :status => 412
@@ -63,7 +63,7 @@ class FeedersController < ApplicationController
   end
 
   def dispatch_data_to_feeder
-    api_url = 'http://169.254.229.243:8000'
+    api_url = Rails.application.config.base_module_ip
     @result = HTTParty.post(api_url,
           :body => feeder_working_setups,
           :headers => { 'Content-Type' => 'application/json' } )
