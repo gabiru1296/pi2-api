@@ -58,7 +58,6 @@ class FeedersController < ApplicationController
 
       register_sensor_values(register, feeder)
     end
-    byebug
     render :nothing => true, :status => 200
   end
 
