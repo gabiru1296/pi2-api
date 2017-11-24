@@ -1,7 +1,7 @@
 require 'httparty'
 
 class FeedersController < ApplicationController
-  before_action :set_feeder, only: [:show, :update, :destroy]
+  before_action :set_feeder, only: [:show, :update, :destroy, :dispatch_data_to_feeder]
 
   # GET /feeders
   def index
@@ -52,8 +52,8 @@ class FeedersController < ApplicationController
     data.each do |register|
       feeder = get_feeder_by_network_code register[:network_code]
 
-      feeder.food_level = params['food_level'].to_i
-      feeder.battery_level = params['battery_level'].to_i
+      feeder.food_level = register['food_level'].to_i
+      feeder.battery_level = register['battery_level'].to_i
       feeder.save
 
       register_sensor_values(register, feeder)
@@ -82,23 +82,59 @@ class FeedersController < ApplicationController
     end
 
     def feeder_working_setups
-      return { :id => 1,
-         :hour => 2,
-         :minute => 3,
-         :frequency => 4,
-         :quanity => 5
+      t = Time.now
+      hour = t.hour
+      minute = t.min + 1
+      return { :id => @feeder.network_code,
+        data: [
+          {
+            :hour => hour,
+            :minute => minute,
+            :quantity => 5
+          },
+          {
+            :hour => hour,
+            :minute => minute + 1,
+            :quantity => 5
+          },
+          {
+            :hour => hour,
+            :minute => minute + 2,
+            :quantity => 5
+          },
+          {
+            :hour => hour,
+            :minute => minute + 3,
+            :quantity => 5
+          },
+          {
+            :hour => hour,
+            :minute => minute + 4,
+            :quantity => 5
+          },
+          {
+            :hour => hour,
+            :minute => minute + 5,
+            :quantity => 5
+          }
+        ]
       }.to_json
     end
 
     def register_sensor_values(register, feeder)
-      register_value_for_sensor(:ph, register['ph'], feeder)
-      register_value_for_sensor(:conductivity, register['conductivity'], feeder)
-      register_value_for_sensor(:temperature, register['temperature'], feeder)
-      register_value_for_sensor(:turbidity, register['turbidity'], feeder)
-      register_value_for_sensor(:oxigenium, register['oxigenium'], feeder)
+      now = DateTime.new
+      normilizedData =  now.change({hour: register["hora"].to_i, min: register["minute"].to_i, sec: 0})
+      puts "-------------------------"
+      puts register
+      puts "-------------------------"
+      register_value_for_sensor(:ph, register['ph'], feeder, normilizedData)
+      register_value_for_sensor(:conductivity, register['conductivity'], feeder, normilizedData)
+      register_value_for_sensor(:temperature, register['temperature'], feeder, normilizedData)
+      register_value_for_sensor(:turbidity, register['turbidity'], feeder, normilizedData)
+      register_value_for_sensor(:oxigenium, register['oxigenium'], feeder, normilizedData)
     end
 
-    def register_value_for_sensor(type, value, feeder)
+    def register_value_for_sensor(type, value, feeder, datetime)
       if value == nil
         return
       end
@@ -106,12 +142,12 @@ class FeedersController < ApplicationController
       sensor = feeder.sensors.where(sensor_type: type).take
 
       if sensor != nil
-        SensorRecord.create(value: value.to_f, sensor: sensor)
+        SensorRecord.create(value: value.to_f, sensor: sensor, created_at: datetime)
       else
         new_sensor = sensor_for_type(type, feeder)
 
         if new_sensor.save
-          SensorRecord.create(value: value.to_f, sensor: new_sensor)
+          SensorRecord.create(value: value.to_f, sensor: new_sensor, created_at: datetime)
         end
       end
     end
