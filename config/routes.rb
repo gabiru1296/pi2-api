@@ -9,7 +9,8 @@ Rails.application.routes.draw do
   resources :feeders do
     collection do
       post 'register_data', :to => 'feeders#register_data'
-      get 'send_settings/:id', :to => 'feeders#dispatch_data_to_feeder'
+      post 'send_settings/:id', :to => 'feeders#dispatch_data_to_feeder'
+      get 'fish_history/:id', :to => 'feeders#fish_history'
     end
   end
   resources :tanks do

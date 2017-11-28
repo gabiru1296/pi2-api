@@ -3,6 +3,7 @@ class Feeder < ApplicationRecord
   has_many :sensors, dependent: :destroy
   has_many :consumptions
   has_many :lots, through: :consumptions
+  has_many :feeder_clocks
 
   before_save :verify_need_setup, on: [:update]
 

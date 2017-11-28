@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171124165326) do
+ActiveRecord::Schema.define(version: 20171127015853) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -70,6 +70,16 @@ ActiveRecord::Schema.define(version: 20171124165326) do
     t.index ["lot_id"], name: "index_consumptions_on_lot_id"
   end
 
+  create_table "feeder_clocks", force: :cascade do |t|
+    t.integer "hour"
+    t.integer "minute"
+    t.bigint "feeder_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "quatity"
+    t.index ["feeder_id"], name: "index_feeder_clocks_on_feeder_id"
+  end
+
   create_table "feeders", force: :cascade do |t|
     t.string "nickname"
     t.bigint "tank_id"
@@ -81,6 +91,7 @@ ActiveRecord::Schema.define(version: 20171124165326) do
     t.integer "network_code"
     t.integer "food_level"
     t.integer "battery_level"
+    t.integer "weight"
     t.index ["tank_id"], name: "index_feeders_on_tank_id"
   end
 
@@ -162,6 +173,7 @@ ActiveRecord::Schema.define(version: 20171124165326) do
   add_foreign_key "consumptions", "clusters"
   add_foreign_key "consumptions", "feeders"
   add_foreign_key "consumptions", "lots"
+  add_foreign_key "feeder_clocks", "feeders"
   add_foreign_key "feeders", "tanks"
   add_foreign_key "sensor_errors", "sensors"
   add_foreign_key "sensor_records", "sensors"

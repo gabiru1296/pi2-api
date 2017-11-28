@@ -3,4 +3,5 @@ class FeederSerializer < ActiveModel::Serializer
   has_one :tank
   has_many :sensors
   has_many :consumptions
+  has_many :feeder_clocks
 end

@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  hour: 
+  minute: 
+  feeder: one
+
+two:
+  hour: 
+  minute: 
+  feeder: two

@@ -1,7 +1,7 @@
 require 'httparty'
 
 class FeedersController < ApplicationController
-  before_action :set_feeder, only: [:show, :update, :destroy, :dispatch_data_to_feeder]
+  before_action :set_feeder, only: [:show, :update, :destroy, :dispatch_data_to_feeder, :fish_history]
 
   # GET /feeders
   def index
@@ -62,12 +62,59 @@ class FeedersController < ApplicationController
   end
 
   def dispatch_data_to_feeder
+    @feeder.feeder_clocks.destroy_all
+
+    data_to_send = Hash.new
+    data_to_send["id"] = @feeder.network_code
+    settings = Array.new
+
+    ["0","1","2","3","4","5"].each do |key|
+      data = params[:data][key]
+      if data != nil
+        current_settings = Hash.new
+        current_settings['hour'] = data[:hour].to_i
+        current_settings['minute'] = data[:minute].to_i
+        current_settings['quantity'] = data[:quantity].to_i
+        settings.push(current_settings)
+      end
+    end
+
+    if settings.length < 6
+      number_item_to_add = 6 - settings.length
+
+      i = 0
+      while i < number_item_to_add  do
+        current_settings = Hash.new
+        current_settings['hour'] = 61
+        current_settings['minute'] = 61
+        current_settings['quantity'] = 1
+        settings.push(current_settings)
+        i +=1
+      end
+    end
+
+    data_to_send["data"] = settings
+
     api_url = Rails.application.config.base_module_ip
+
     @result = HTTParty.post(api_url,
-          :body => feeder_working_setups,
+          :body => data_to_send.to_json,
           :headers => { 'Content-Type' => 'application/json' } )
 
-    render :nothing => true, :status => @result.code
+    render :json => data_to_send, :status => 200
+  end
+
+  def fish_history
+    cluster = @feeder.tank.clusters.where(:is_done => false).first
+    total = cluster.total + cluster.transfer_in_quantity
+
+    render json: {
+      current: cluster.current_total/total * 100,
+      death: cluster.death_quantity/total * 100,
+      transfer_in: cluster.transfer_in_quantity/total * 100,
+      transfer_out: cluster.transfer_out_quantity/total * 100,
+      total: cluster.current_total
+    }
   end
 
   private
@@ -81,43 +128,43 @@ class FeedersController < ApplicationController
     end
 
     def feeder_working_setups
-      t = Time.now
-      hour = t.hour
-      minute = t.min + 1
-      return { :id => @feeder.network_code,
-        data: [
-          {
-            :hour => hour,
-            :minute => minute,
-            :quantity => 5
-          },
-          {
-            :hour => hour,
-            :minute => minute + 1,
-            :quantity => 5
-          },
-          {
-            :hour => hour,
-            :minute => minute + 2,
-            :quantity => 5
-          },
-          {
-            :hour => hour,
-            :minute => minute + 3,
-            :quantity => 5
-          },
-          {
-            :hour => hour,
-            :minute => minute + 4,
-            :quantity => 5
-          },
-          {
-            :hour => hour,
-            :minute => minute + 5,
-            :quantity => 5
-          }
-        ]
-      }.to_json
+      # t = Time.now
+      # hour = t.hour
+      # minute = t.min + 1
+      # return { :id => @feeder.network_code,
+      #   data: [
+      #     {
+      #       :hour => hour,
+      #       :minute => minute,
+      #       :quantity => 5
+      #     },
+      #     {
+      #       :hour => hour,
+      #       :minute => minute + 1,
+      #       :quantity => 5
+      #     },
+      #     {
+      #       :hour => hour,
+      #       :minute => minute + 2,
+      #       :quantity => 5
+      #     },
+      #     {
+      #       :hour => hour,
+      #       :minute => minute + 3,
+      #       :quantity => 5
+      #     },
+      #     {
+      #       :hour => hour,
+      #       :minute => minute + 4,
+      #       :quantity => 5
+      #     },
+      #     {
+      #       :hour => hour,
+      #       :minute => minute + 5,
+      #       :quantity => 5
+      #     }
+      #   ]
+      # }.to_json
     end
 
     def register_sensor_values(register, feeder)

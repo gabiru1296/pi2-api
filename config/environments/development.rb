@@ -1,7 +1,7 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
-  config.base_module_ip = 'http://169.254.229.243:8000'
+  config.base_module_ip = 'http://192.168.0.190:8000'
 
   # In the development environment your application's code is reloaded on
   # every request. This slows down response time but is perfect for development
