@@ -107,12 +107,12 @@ class FeedersController < ApplicationController
   def fish_history
     cluster = @feeder.tank.clusters.where(:is_done => false).first
     total = cluster.total + cluster.transfer_in_quantity
-
+    
     render json: {
-      current: cluster.current_total/total * 100,
-      death: cluster.death_quantity/total * 100,
-      transfer_in: cluster.transfer_in_quantity/total * 100,
-      transfer_out: cluster.transfer_out_quantity/total * 100,
+      current: (cluster.current_total.to_f/total.to_f).abs * 100,
+      death: (cluster.death_quantity.to_f/total.to_f).abs * 100,
+      transfer_in: (cluster.transfer_in_quantity.to_f/total.to_f).abs * 100,
+      transfer_out: (cluster.transfer_out_quantity.to_f/total.to_f).abs * 100,
       total: cluster.current_total
     }
   end
@@ -171,13 +171,14 @@ class FeedersController < ApplicationController
       now = DateTime.now
       hours = register["hora"].to_i
       minute = register["minute"].to_i
-      normilizedDateTime =  DateTime.new(now.year, now.month, now.day, hours, minute, 0, now.zone)
+      second = register["second"].to_i
+      normilizedDateTime =  DateTime.new(now.year, now.month, now.day, hours, minute, second, now.zone)
 
       register_value_for_sensor(:ph, register['ph'], feeder, normilizedDateTime)
-      register_value_for_sensor(:conductivity, register['conductivity'], feeder, normilizedDateTime)
+      # register_value_for_sensor(:conductivity, register['conductivity'], feeder, normilizedDateTime)
       register_value_for_sensor(:temperature, register['temperature'], feeder, normilizedDateTime)
-      register_value_for_sensor(:turbidity, register['turbidity'], feeder, normilizedDateTime)
-      register_value_for_sensor(:oxigenium, register['oxigenium'], feeder, normilizedDateTime)
+      # register_value_for_sensor(:turbidity, register['turbidity'], feeder, normilizedDateTime)
+      # register_value_for_sensor(:oxigenium, register['oxigenium'], feeder, normilizedDateTime)
     end
 
     def register_value_for_sensor(type, value, feeder, datetime)
@@ -204,18 +205,18 @@ class FeedersController < ApplicationController
     def sensor_for_type(type, feeder)
       case type
       when :ph
-        return Sensor.new name: "Sensor PH", description: "Sensor de PH. Descrição default", scale: "cm", sensor_type: :ph, feeder: feeder
+        return Sensor.new name: "Sensor PH", description: "Sensor de PH. Descrição default", scale: "", sensor_type: :ph, feeder: feeder
       when :conductivity
         return Sensor.new name: "Sensor de Condutividade", description: "Descrição default de condutividade", scale: "cm", sensor_type: :conductivity, feeder: feeder
       when :temperature
-        return Sensor.new name: "Sensor de Temperatura", description: "Descrição default de Temperatura", scale: "cm", sensor_type: :temperature, feeder: feeder
+        return Sensor.new name: "Sensor de Temperatura", description: "Descrição default de Temperatura", scale: "Celcius", sensor_type: :temperature, feeder: feeder
       when :oxigenium
-        return Sensor.new name: "Sensor de Oxigênio", description: "Descrição default de Oxigêncio", scale: "cm", sensor_type: :oxigenium, feeder: feeder
+        return Sensor.new name: "Sensor de Oxigênio", description: "Descrição default de Oxigêncio", scale: "", sensor_type: :oxigenium, feeder: feeder
       when :turbidity
-        return Sensor.new name: "Sensor de Turbidez", description: "Descrição default de Tubidez", scale: "cm", sensor_type: :turbidity, feeder: feeder
+        return Sensor.new name: "Sensor de Turbidez", description: "Descrição default de Tubidez", scale: "", sensor_type: :turbidity, feeder: feeder
       else
         ####### sensor default #######
-        return Sensor.new name: "Sensor desconhecido", description: "Descrição default de Temperatura", scale: "cm", sensor_type: :untyped, feeder: feeder
+        return Sensor.new name: "Sensor desconhecido", description: "Descrição default de Temperatura", scale: "", sensor_type: :untyped, feeder: feeder
       end
     end
 
