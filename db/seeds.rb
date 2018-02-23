@@ -29,3 +29,39 @@ FishType.create([
     name: 'Pintado'
   }
 ])
+
+Food.create([
+  {
+    name: 'Ração A',
+    thickness: 10
+  },
+  {
+    name: 'Ração B',
+    thickness: 20
+  }
+])
+
+Lot.create([{
+  price: 1000,
+  validity: "2018-02-09",
+  buy_date: "2018-10-09",
+  quantity: 1000,
+  current_quantity: 1000,
+  food_id: 1
+}])
+
+Tank.create([{
+  name: 'Tanque A'
+}])
+
+
+Cluster.create([
+  {
+    total: 300,
+    is_done: "f",
+    current_total: 300,
+    fish_type_id: 1,
+    tank_id: 1,
+    initial_weight: 200
+  }
+])
